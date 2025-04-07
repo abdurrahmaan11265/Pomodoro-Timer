@@ -11,7 +11,6 @@ export const Navbar = () => {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
-    // Only show the theme toggle after the component has mounted
     useEffect(() => {
         setMounted(true);
     }, []);

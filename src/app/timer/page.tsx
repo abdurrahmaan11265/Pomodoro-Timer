@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
 const Timer = () => {
-    const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(25 * 60);
     const [isRunning, setIsRunning] = useState(false);
     const [mode, setMode] = useState<"focus" | "shortBreak" | "longBreak">("focus");
     const [cycles, setCycles] = useState(0);
-    const [selectedDuration, setSelectedDuration] = useState(25); // Default duration in minutes
+    const [selectedDuration, setSelectedDuration] = useState(25);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -34,18 +34,17 @@ const Timer = () => {
             setCycles((prev) => prev + 1);
             if (cycles + 1 >= 4) {
                 setMode("longBreak");
-                setTimeLeft(15 * 60); // 15 minutes
+                setTimeLeft(15 * 60);
                 setCycles(0);
             } else {
                 setMode("shortBreak");
-                setTimeLeft(5 * 60); // 5 minutes
+                setTimeLeft(5 * 60);
             }
         } else {
             setMode("focus");
-            setTimeLeft(selectedDuration * 60); // Use selected duration
+            setTimeLeft(selectedDuration * 60);
         }
 
-        // Update stats in localStorage
         const stats = JSON.parse(localStorage.getItem("pomodoroStats") || "{}");
         const today = new Date().toDateString();
         const updatedStats = {
@@ -96,7 +95,6 @@ const Timer = () => {
                                 : "Long Break"}
                     </div>
 
-                    {/* Timer duration options */}
                     <div className="flex justify-center space-x-2 mb-4">
                         <Button
                             variant={selectedDuration === 5 ? "default" : "outline"}

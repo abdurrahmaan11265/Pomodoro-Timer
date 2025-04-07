@@ -7,7 +7,6 @@ import { ArrowUp } from "lucide-react";
 export const BackToTop = () => {
     const [isVisible, setIsVisible] = useState(false);
 
-    // Show button when page is scrolled up to given distance
     const toggleVisibility = () => {
         if (window.pageYOffset > 300) {
             setIsVisible(true);
@@ -16,7 +15,6 @@ export const BackToTop = () => {
         }
     };
 
-    // Set the scroll event listener
     useEffect(() => {
         window.addEventListener("scroll", toggleVisibility);
         return () => {
@@ -24,7 +22,6 @@ export const BackToTop = () => {
         };
     }, []);
 
-    // Scroll to top smoothly
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
