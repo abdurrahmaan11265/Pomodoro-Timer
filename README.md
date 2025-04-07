@@ -2,8 +2,6 @@
 
 A modern, feature-rich study planning application built with Next.js, React, and Tailwind CSS. This application helps students and professionals manage their tasks, track study sessions with a Pomodoro timer, and maintain productivity with background music.
 
-![Study Planner Screenshot](screenshot.png)
-
 ## Features
 
 ### Task Management
@@ -97,10 +95,6 @@ study-planner/
 - **TypeScript**: Typed JavaScript for better developer experience
 - **Lucide React**: Beautiful, consistent icons
 - **next-themes**: Theme management for dark/light mode
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
