@@ -103,7 +103,6 @@ export const Navbar = () => {
                 </div>
             </div>
 
-            {/* Mobile Menu Overlay */}
             <div
                 ref={mobileMenuRef}
                 className={cn(

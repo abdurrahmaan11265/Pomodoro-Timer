@@ -25,7 +25,6 @@ export default function Home() {
       const allTasks = JSON.parse(savedTasks);
       setTasks(allTasks);
 
-      // Filter out completed tasks and sort by due date
       const pendingTasks = allTasks
         .filter((task: Task) => !task.completed)
         .sort((a: Task, b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
@@ -41,7 +40,6 @@ export default function Home() {
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
 
-    // Update upcoming tasks
     const pendingTasks = updatedTasks
       .filter((task: Task) => !task.completed)
       .sort((a: Task, b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
@@ -54,7 +52,6 @@ export default function Home() {
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
 
-    // Update upcoming tasks
     const pendingTasks = updatedTasks
       .filter((task: Task) => !task.completed)
       .sort((a: Task, b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());

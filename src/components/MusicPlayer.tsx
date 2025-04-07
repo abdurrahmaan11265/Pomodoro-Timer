@@ -24,15 +24,12 @@ export function MusicPlayer() {
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
-        // Initialize audio element
         audioRef.current = new Audio(musicTracks[currentTrackIndex].file);
-        audioRef.current.volume = 0.5; // Set default volume to 50%
+        audioRef.current.volume = 0.5; 
         audioRef.current.loop = isLooping;
 
-        // Add event listener for when track ends
         const handleEnded = () => {
             if (!isLooping) {
-                // Only play next track if not looping
                 playNextTrack();
             }
         };
@@ -47,7 +44,6 @@ export function MusicPlayer() {
         };
     }, []);
 
-    // Update audio source when track changes
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.src = musicTracks[currentTrackIndex].file;
@@ -58,7 +54,6 @@ export function MusicPlayer() {
         }
     }, [currentTrackIndex, isLooping]);
 
-    // Add click outside handler
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
