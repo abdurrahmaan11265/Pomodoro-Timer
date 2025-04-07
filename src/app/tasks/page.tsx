@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Filter } from "lucide-react";
 import { TaskList } from "@/components/TaskList";
 import { TaskForm } from "@/components/TaskForm";
+import { BackToTop } from "@/components/BackToTop";
 
 interface Task {
     id: string;
@@ -132,6 +133,8 @@ const TasksPage = () => {
                 onDelete={deleteTask}
                 onEdit={editTask}
             />
+
+            <BackToTop />
         </div>
     );
 };
