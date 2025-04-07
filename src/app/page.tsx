@@ -17,11 +17,20 @@ interface Task {
 
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [upcomingTasks, setUpcomingTasks] = useState<Task[]>([]);
 
   useEffect(() => {
     const savedTasks = localStorage.getItem("tasks");
     if (savedTasks) {
-      setTasks(JSON.parse(savedTasks));
+      const allTasks = JSON.parse(savedTasks);
+      setTasks(allTasks);
+
+      // Filter out completed tasks and sort by due date
+      const pendingTasks = allTasks
+        .filter((task: Task) => !task.completed)
+        .sort((a: Task, b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+      setUpcomingTasks(pendingTasks);
     }
   }, []);
 
@@ -31,12 +40,26 @@ export default function Home() {
     );
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+    // Update upcoming tasks
+    const pendingTasks = updatedTasks
+      .filter((task: Task) => !task.completed)
+      .sort((a: Task, b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+    setUpcomingTasks(pendingTasks);
   };
 
   const deleteTask = (taskId: string) => {
     const updatedTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(updatedTasks);
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+    // Update upcoming tasks
+    const pendingTasks = updatedTasks
+      .filter((task: Task) => !task.completed)
+      .sort((a: Task, b: Task) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+    setUpcomingTasks(pendingTasks);
   };
 
   return (
@@ -45,14 +68,18 @@ export default function Home() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="p-6 flex flex-col">
-          <h2 className="text-xl font-semibold mb-4">Today's Tasks</h2>
+          <h2 className="text-xl font-semibold mb-4">Upcoming Tasks</h2>
           <div className="overflow-y-auto max-h-[300px] pr-2">
-            <TaskList
-              tasks={tasks}
-              onToggle={toggleTask}
-              onDelete={deleteTask}
-              limit={5}
-            />
+            {upcomingTasks.length > 0 ? (
+              <TaskList
+                tasks={upcomingTasks}
+                onToggle={toggleTask}
+                onDelete={deleteTask}
+                limit={5}
+              />
+            ) : (
+              <p className="text-muted-foreground">No upcoming tasks. Add some tasks to get started!</p>
+            )}
           </div>
         </Card>
 

@@ -52,13 +52,11 @@ const StatisticsPage = () => {
     });
 
     useEffect(() => {
-        // Load Pomodoro stats
         const savedPomodoroStats = localStorage.getItem("pomodoroStats");
         if (savedPomodoroStats) {
             setPomodoroStats(JSON.parse(savedPomodoroStats));
         }
 
-        // Load Task stats
         const savedTasks = localStorage.getItem("tasks");
         if (savedTasks) {
             const tasks = JSON.parse(savedTasks);

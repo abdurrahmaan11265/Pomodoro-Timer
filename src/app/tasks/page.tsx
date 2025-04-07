@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter } from "lucide-react";
+import { Plus, Filter, ArrowUpDown, Calendar } from "lucide-react";
 import { TaskList } from "@/components/TaskList";
 import { TaskForm } from "@/components/TaskForm";
 import { BackToTop } from "@/components/BackToTop";
@@ -17,10 +17,13 @@ interface Task {
     completed: boolean;
 }
 
+type SortOrder = "asc" | "desc" | "none";
+
 const TasksPage = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [showForm, setShowForm] = useState(false);
     const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
+    const [sortOrder, setSortOrder] = useState<SortOrder>("none");
     const [editingTask, setEditingTask] = useState<Task | null>(null);
 
     useEffect(() => {
@@ -75,10 +78,29 @@ const TasksPage = () => {
         localStorage.setItem("tasks", JSON.stringify(updatedTasks));
     };
 
+    const toggleSortOrder = () => {
+        if (sortOrder === "none") {
+            setSortOrder("asc");
+        } else if (sortOrder === "asc") {
+            setSortOrder("desc");
+        } else {
+            setSortOrder("none");
+        }
+    };
+
     const filteredTasks = tasks.filter((task) => {
         if (filter === "pending") return !task.completed;
         if (filter === "completed") return task.completed;
         return true;
+    });
+
+    const sortedAndFilteredTasks = [...filteredTasks].sort((a, b) => {
+        if (sortOrder === "none") return 0;
+
+        const dateA = new Date(a.dueDate).getTime();
+        const dateB = new Date(b.dueDate).getTime();
+
+        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
     });
 
     const handleCancel = () => {
@@ -96,25 +118,43 @@ const TasksPage = () => {
                 </Button>
             </div>
 
-            <div className="flex space-x-4">
-                <Button
-                    variant={filter === "all" ? "default" : "outline"}
-                    onClick={() => setFilter("all")}
-                >
-                    All
-                </Button>
-                <Button
-                    variant={filter === "pending" ? "default" : "outline"}
-                    onClick={() => setFilter("pending")}
-                >
-                    Pending
-                </Button>
-                <Button
-                    variant={filter === "completed" ? "default" : "outline"}
-                    onClick={() => setFilter("completed")}
-                >
-                    Completed
-                </Button>
+            <div className="flex flex-wrap gap-4">
+                <div className="flex space-x-2">
+                    <Button
+                        variant={filter === "all" ? "default" : "outline"}
+                        onClick={() => setFilter("all")}
+                    >
+                        All
+                    </Button>
+                    <Button
+                        variant={filter === "pending" ? "default" : "outline"}
+                        onClick={() => setFilter("pending")}
+                    >
+                        Pending
+                    </Button>
+                    <Button
+                        variant={filter === "completed" ? "default" : "outline"}
+                        onClick={() => setFilter("completed")}
+                    >
+                        Completed
+                    </Button>
+                </div>
+
+                <div className="ml-auto">
+                    <Button
+                        variant="outline"
+                        onClick={toggleSortOrder}
+                        className="flex items-center"
+                    >
+                        <Calendar className="mr-2 h-4 w-4" />
+                        Sort by Due Date
+                        {sortOrder !== "none" && (
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        )}
+                        {sortOrder === "asc" && <span className="ml-1">↑</span>}
+                        {sortOrder === "desc" && <span className="ml-1">↓</span>}
+                    </Button>
+                </div>
             </div>
 
             {showForm && (
@@ -128,7 +168,7 @@ const TasksPage = () => {
             )}
 
             <TaskList
-                tasks={filteredTasks}
+                tasks={sortedAndFilteredTasks}
                 onToggle={toggleTask}
                 onDelete={deleteTask}
                 onEdit={editTask}

@@ -19,7 +19,6 @@ export const PomodoroSummary = () => {
     });
 
     useEffect(() => {
-        // Load stats from localStorage
         const savedStats = localStorage.getItem("pomodoroStats");
         if (savedStats) {
             setStats(JSON.parse(savedStats));

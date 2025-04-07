@@ -7,30 +7,57 @@ interface Quote {
     author: string;
 }
 
+const fallbackQuotes: Quote[] = [
+    { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+    { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+    { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+    { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+    { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+    { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+    { text: "The only limit to our realization of tomorrow will be our doubts of today.", author: "Franklin D. Roosevelt" },
+    { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+    { text: "Your time is limited, so don't waste it living someone else's life.", author: "Steve Jobs" },
+    { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" }
+];
+
 export const MotivationalQuote = () => {
     const [quote, setQuote] = useState<Quote>({
         text: "Loading...",
         author: "",
     });
     const [loading, setLoading] = useState(true);
+    const [lastQuoteIndex, setLastQuoteIndex] = useState(-1);
 
     useEffect(() => {
         const fetchQuote = async () => {
             try {
-                const response = await fetch("https://api.quotable.io/random?tags=motivation");
+                const timestamp = new Date().getTime();
+                const response = await fetch(`https://zenquotes.io/api/random?t=${timestamp}`);
                 const data = await response.json();
-                setQuote({
-                    text: data.content,
-                    author: data.author,
-                });
+
+                if (data && data.length > 0 && data[0].q && data[0].a) {
+                    setQuote({
+                        text: data[0].q,
+                        author: data[0].a,
+                    });
+                } else {
+                    useFallbackQuote();
+                }
             } catch (error) {
-                setQuote({
-                    text: "The only way to do great work is to love what you do.",
-                    author: "Steve Jobs",
-                });
+                useFallbackQuote();
             } finally {
                 setLoading(false);
             }
+        };
+
+        const useFallbackQuote = () => {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * fallbackQuotes.length);
+            } while (randomIndex === lastQuoteIndex && fallbackQuotes.length > 1);
+
+            setLastQuoteIndex(randomIndex);
+            setQuote(fallbackQuotes[randomIndex]);
         };
 
         fetchQuote();
