@@ -10,7 +10,7 @@ interface PomodoroStats {
     totalFocusTime: number;
 }
 
-const PomodoroSummary = () => {
+export const PomodoroSummary = () => {
     const [stats, setStats] = useState<PomodoroStats>({
         totalSessions: 0,
         todaySessions: 0,
@@ -52,6 +52,4 @@ const PomodoroSummary = () => {
             </Card>
         </div>
     );
-};
-
-export default PomodoroSummary; 
+}; 

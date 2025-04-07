@@ -20,7 +20,7 @@ interface TaskFormProps {
     };
 }
 
-const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => {
+export const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => {
     const [title, setTitle] = useState(initialData?.title || "");
     const [description, setDescription] = useState(initialData?.description || "");
     const [dueDate, setDueDate] = useState(initialData?.dueDate || "");
@@ -108,6 +108,4 @@ const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => {
             </div>
         </form>
     );
-};
-
-export default TaskForm; 
+}; 

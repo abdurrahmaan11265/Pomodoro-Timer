@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import TaskList from "@/components/TaskList";
-import PomodoroSummary from "@/components/PomodoroSummary";
-import MotivationalQuote from "@/components/MotivationalQuote";
+import { TaskList } from "@/components/TaskList";
+import { PomodoroSummary } from "@/components/PomodoroSummary";
+import { MotivationalQuote } from "@/components/MotivationalQuote";
 
 interface Task {
   id: string;

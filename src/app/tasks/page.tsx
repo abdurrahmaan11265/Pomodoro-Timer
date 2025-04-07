@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Filter } from "lucide-react";
-import TaskList from "@/components/TaskList";
-import TaskForm from "@/components/TaskForm";
+import { TaskList } from "@/components/TaskList";
+import { TaskForm } from "@/components/TaskForm";
 
 interface Task {
     id: string;
@@ -20,6 +20,7 @@ const TasksPage = () => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [showForm, setShowForm] = useState(false);
     const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
+    const [editingTask, setEditingTask] = useState<Task | null>(null);
 
     useEffect(() => {
         const savedTasks = localStorage.getItem("tasks");
@@ -37,6 +38,26 @@ const TasksPage = () => {
         setTasks(updatedTasks);
         localStorage.setItem("tasks", JSON.stringify(updatedTasks));
         setShowForm(false);
+    };
+
+    const editTask = (task: Task) => {
+        setEditingTask(task);
+        setShowForm(true);
+    };
+
+    const updateTask = (taskData: Omit<Task, "id">) => {
+        if (!editingTask) return;
+
+        const updatedTasks = tasks.map((task) =>
+            task.id === editingTask.id
+                ? { ...taskData, id: task.id, completed: task.completed }
+                : task
+        );
+
+        setTasks(updatedTasks);
+        localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+        setShowForm(false);
+        setEditingTask(null);
     };
 
     const deleteTask = (taskId: string) => {
@@ -58,6 +79,11 @@ const TasksPage = () => {
         if (filter === "completed") return task.completed;
         return true;
     });
+
+    const handleCancel = () => {
+        setShowForm(false);
+        setEditingTask(null);
+    };
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
@@ -92,11 +118,20 @@ const TasksPage = () => {
 
             {showForm && (
                 <Card className="p-6">
-                    <TaskForm onSubmit={addTask} onCancel={() => setShowForm(false)} />
+                    <TaskForm
+                        onSubmit={editingTask ? updateTask : addTask}
+                        onCancel={handleCancel}
+                        initialData={editingTask || undefined}
+                    />
                 </Card>
             )}
 
-            <TaskList tasks={filteredTasks} onToggle={toggleTask} onDelete={deleteTask} />
+            <TaskList
+                tasks={filteredTasks}
+                onToggle={toggleTask}
+                onDelete={deleteTask}
+                onEdit={editTask}
+            />
         </div>
     );
 };

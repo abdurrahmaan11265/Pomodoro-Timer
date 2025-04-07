@@ -2,6 +2,8 @@
 
 import { Card } from "./ui/card";
 import { Checkbox } from "./ui/checkbox";
+import { Button } from "./ui/button";
+import { Pencil, Trash2 } from "lucide-react";
 
 interface Task {
     id: string;
@@ -16,13 +18,15 @@ interface TaskListProps {
     tasks?: Task[];
     onToggle?: (taskId: string) => void;
     onDelete?: (taskId: string) => void;
+    onEdit?: (task: Task) => void;
     limit?: number;
 }
 
-const TaskList = ({
+export const TaskList = ({
     tasks = [],
     onToggle = () => { },
     onDelete = () => { },
+    onEdit = () => { },
     limit
 }: TaskListProps) => {
     const displayedTasks = limit ? tasks.slice(0, limit) : tasks;
@@ -58,12 +62,28 @@ const TaskList = ({
                                     </span>
                                 </div>
                             </div>
+                            <div className="flex space-x-2">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => onEdit(task)}
+                                    className="h-8 w-8"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => onDelete(task.id)}
+                                    className="h-8 w-8 text-red-500 hover:text-red-700"
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
                     </Card>
                 ))
             )}
         </div>
     );
-};
-
-export default TaskList; 
+}; 

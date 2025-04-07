@@ -7,7 +7,7 @@ interface Quote {
     author: string;
 }
 
-const MotivationalQuote = () => {
+export const MotivationalQuote = () => {
     const [quote, setQuote] = useState<Quote>({
         text: "Loading...",
         author: "",
@@ -51,6 +51,4 @@ const MotivationalQuote = () => {
             <footer className="text-sm text-muted-foreground">— {quote.author}</footer>
         </blockquote>
     );
-};
-
-export default MotivationalQuote; 
+}; 

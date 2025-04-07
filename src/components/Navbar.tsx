@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
-const Navbar = () => {
+export const Navbar = () => {
     const pathname = usePathname();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
@@ -62,6 +62,4 @@ const Navbar = () => {
             </div>
         </nav>
     );
-};
-
-export default Navbar; 
+}; 
