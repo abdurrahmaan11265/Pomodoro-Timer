@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Checkbox } from "./ui/checkbox";
 
@@ -14,28 +13,18 @@ interface Task {
 }
 
 interface TaskListProps {
+    tasks?: Task[];
+    onToggle?: (taskId: string) => void;
+    onDelete?: (taskId: string) => void;
     limit?: number;
 }
 
-const TaskList = ({ limit }: TaskListProps) => {
-    const [tasks, setTasks] = useState<Task[]>([]);
-
-    useEffect(() => {
-        // Load tasks from localStorage
-        const savedTasks = localStorage.getItem("tasks");
-        if (savedTasks) {
-            setTasks(JSON.parse(savedTasks));
-        }
-    }, []);
-
-    const toggleTask = (taskId: string) => {
-        const updatedTasks = tasks.map((task) =>
-            task.id === taskId ? { ...task, completed: !task.completed } : task
-        );
-        setTasks(updatedTasks);
-        localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-    };
-
+const TaskList = ({
+    tasks = [],
+    onToggle = () => { },
+    onDelete = () => { },
+    limit
+}: TaskListProps) => {
     const displayedTasks = limit ? tasks.slice(0, limit) : tasks;
 
     return (
@@ -48,7 +37,7 @@ const TaskList = ({ limit }: TaskListProps) => {
                         <div className="flex items-start space-x-4">
                             <Checkbox
                                 checked={task.completed}
-                                onCheckedChange={() => toggleTask(task.id)}
+                                onCheckedChange={() => onToggle(task.id)}
                             />
                             <div className="flex-1">
                                 <h3 className={`font-medium ${task.completed ? "line-through text-muted-foreground" : ""}`}>
@@ -60,10 +49,10 @@ const TaskList = ({ limit }: TaskListProps) => {
                                         Due: {new Date(task.dueDate).toLocaleDateString()}
                                     </span>
                                     <span className={`text-xs px-2 py-1 rounded-full ${task.priority === "high"
-                                            ? "bg-red-100 text-red-800"
-                                            : task.priority === "medium"
-                                                ? "bg-yellow-100 text-yellow-800"
-                                                : "bg-green-100 text-green-800"
+                                        ? "bg-red-100 text-red-800"
+                                        : task.priority === "medium"
+                                            ? "bg-yellow-100 text-yellow-800"
+                                            : "bg-green-100 text-green-800"
                                         }`}>
                                         {task.priority}
                                     </span>

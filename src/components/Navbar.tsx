@@ -4,10 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
     const pathname = usePathname();
     const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    // Only show the theme toggle after the component has mounted
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const navItems = [
         { name: "Dashboard", path: "/" },
@@ -30,8 +37,8 @@ const Navbar = () => {
                                     key={item.path}
                                     href={item.path}
                                     className={`px-3 py-2 rounded-md text-sm font-medium ${pathname === item.path
-                                            ? "bg-primary text-primary-foreground"
-                                            : "hover:bg-accent hover:text-accent-foreground"
+                                        ? "bg-primary text-primary-foreground"
+                                        : "hover:bg-accent hover:text-accent-foreground"
                                         }`}
                                 >
                                     {item.name}
@@ -39,16 +46,18 @@ const Navbar = () => {
                             ))}
                         </div>
                     </div>
-                    <button
-                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                        className="p-2 rounded-md hover:bg-accent"
-                    >
-                        {theme === "dark" ? (
-                            <Sun className="h-5 w-5" />
-                        ) : (
-                            <Moon className="h-5 w-5" />
-                        )}
-                    </button>
+                    {mounted && (
+                        <button
+                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                            className="p-2 rounded-md hover:bg-accent"
+                        >
+                            {theme === "dark" ? (
+                                <Sun className="h-5 w-5" />
+                            ) : (
+                                <Moon className="h-5 w-5" />
+                            )}
+                        </button>
+                    )}
                 </div>
             </div>
         </nav>
