@@ -7,7 +7,6 @@ import { Moon, Sun, Menu, X } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-import { MusicPlayer } from "./MusicPlayer";
 
 export const Navbar = () => {
     const pathname = usePathname();
@@ -72,19 +71,16 @@ export const Navbar = () => {
                     </div>
                     <div className="flex items-center space-x-4">
                         {mounted && (
-                            <>
-                                <MusicPlayer />
-                                <button
-                                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                                    className="p-2 rounded-md hover:bg-accent"
-                                >
-                                    {theme === "dark" ? (
-                                        <Sun className="h-5 w-5" />
-                                    ) : (
-                                        <Moon className="h-5 w-5" />
-                                    )}
-                                </button>
-                            </>
+                            <button
+                                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                                className="p-2 rounded-md hover:bg-accent"
+                            >
+                                {theme === "dark" ? (
+                                    <Sun className="h-5 w-5" />
+                                ) : (
+                                    <Moon className="h-5 w-5" />
+                                )}
+                            </button>
                         )}
                         <Button
                             variant="ghost"
