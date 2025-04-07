@@ -19,15 +19,25 @@ export function MusicPlayer() {
     const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isLooping, setIsLooping] = useState(true);
+    const [isMounted, setIsMounted] = useState(false);
+    const [hasUserInteracted, setHasUserInteracted] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const playerRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
+    // Initialize audio on mount
     useEffect(() => {
-        audioRef.current = new Audio(musicTracks[currentTrackIndex].file);
-        audioRef.current.volume = 0.5; 
+        setIsMounted(true);
+
+        // Create audio element
+        audioRef.current = new Audio();
+        audioRef.current.volume = 0.5;
         audioRef.current.loop = isLooping;
 
+        // Set initial source
+        audioRef.current.src = musicTracks[currentTrackIndex].file;
+
+        // Add event listeners
         const handleEnded = () => {
             if (!isLooping) {
                 playNextTrack();
@@ -36,24 +46,51 @@ export function MusicPlayer() {
 
         audioRef.current.addEventListener("ended", handleEnded);
 
+        // Cleanup
         return () => {
             if (audioRef.current) {
                 audioRef.current.removeEventListener("ended", handleEnded);
                 audioRef.current.pause();
+                audioRef.current = null;
             }
         };
     }, []);
 
+    // Add a user interaction handler to enable autoplay
     useEffect(() => {
-        if (audioRef.current) {
+        const handleUserInteraction = () => {
+            setHasUserInteracted(true);
+        };
+
+        document.addEventListener('click', handleUserInteraction);
+        document.addEventListener('keydown', handleUserInteraction);
+
+        return () => {
+            document.removeEventListener('click', handleUserInteraction);
+            document.removeEventListener('keydown', handleUserInteraction);
+        };
+    }, []);
+
+    // Update audio when track or loop settings change
+    useEffect(() => {
+        if (audioRef.current && isMounted) {
             audioRef.current.src = musicTracks[currentTrackIndex].file;
             audioRef.current.loop = isLooping;
+
             if (isPlaying) {
-                audioRef.current.play();
+                const playPromise = audioRef.current.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.error("Playback failed:", error);
+                        setIsPlaying(false);
+                    });
+                }
             }
         }
-    }, [currentTrackIndex, isLooping]);
+    }, [currentTrackIndex, isLooping, isMounted, isPlaying]);
 
+    // Handle click outside to close expanded player
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
@@ -77,21 +114,59 @@ export function MusicPlayer() {
         if (audioRef.current) {
             if (isPlaying) {
                 audioRef.current.pause();
+                setIsPlaying(false);
             } else {
-                audioRef.current.play();
+                const playPromise = audioRef.current.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        setIsPlaying(true);
+                    }).catch(error => {
+                        console.error("Playback failed:", error);
+                        setIsPlaying(false);
+                    });
+                }
             }
-            setIsPlaying(!isPlaying);
         }
     };
 
     const playNextTrack = () => {
         setCurrentTrackIndex((prevIndex) => (prevIndex + 1) % musicTracks.length);
+        // Force play the next track
+        if (audioRef.current) {
+            audioRef.current.src = musicTracks[(currentTrackIndex + 1) % musicTracks.length].file;
+            audioRef.current.loop = isLooping;
+            const playPromise = audioRef.current.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    setIsPlaying(true);
+                }).catch(error => {
+                    console.error("Playback failed:", error);
+                    setIsPlaying(false);
+                });
+            }
+        }
     };
 
     const playPreviousTrack = () => {
-        setCurrentTrackIndex((prevIndex) =>
-            prevIndex === 0 ? musicTracks.length - 1 : prevIndex - 1
-        );
+        const newIndex = currentTrackIndex === 0 ? musicTracks.length - 1 : currentTrackIndex - 1;
+        setCurrentTrackIndex(newIndex);
+        // Force play the previous track
+        if (audioRef.current) {
+            audioRef.current.src = musicTracks[newIndex].file;
+            audioRef.current.loop = isLooping;
+            const playPromise = audioRef.current.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    setIsPlaying(true);
+                }).catch(error => {
+                    console.error("Playback failed:", error);
+                    setIsPlaying(false);
+                });
+            }
+        }
     };
 
     const toggleExpanded = () => {
@@ -104,6 +179,11 @@ export function MusicPlayer() {
             audioRef.current.loop = !isLooping;
         }
     };
+
+    // Don't render anything until mounted to avoid hydration issues
+    if (!isMounted) {
+        return null;
+    }
 
     return (
         <div className="relative">
@@ -180,8 +260,20 @@ export function MusicPlayer() {
                                 )}
                                 onClick={() => {
                                     setCurrentTrackIndex(index);
-                                    if (!isPlaying) {
-                                        togglePlay();
+                                    // Force play the selected track
+                                    if (audioRef.current) {
+                                        audioRef.current.src = track.file;
+                                        audioRef.current.loop = isLooping;
+                                        const playPromise = audioRef.current.play();
+
+                                        if (playPromise !== undefined) {
+                                            playPromise.then(() => {
+                                                setIsPlaying(true);
+                                            }).catch(error => {
+                                                console.error("Playback failed:", error);
+                                                setIsPlaying(false);
+                                            });
+                                        }
                                     }
                                 }}
                             >
