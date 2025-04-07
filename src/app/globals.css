@@ -73,6 +73,41 @@
 
   body {
     @apply bg-background text-foreground;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+
+  /* Add transition for all color-related properties */
+  body,
+  div,
+  span,
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  .card,
+  .bg-background,
+  .bg-foreground,
+  .bg-primary,
+  .bg-secondary,
+  .bg-muted,
+  .bg-accent,
+  .bg-destructive,
+  .text-foreground,
+  .text-primary,
+  .text-secondary,
+  .text-muted,
+  .text-accent,
+  .text-destructive,
+  .border-border {
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
   }
 }
 

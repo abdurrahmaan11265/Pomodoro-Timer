@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
+import { CircularProgress } from "@/components/CircularProgress";
 
 const Timer = () => {
     const [timeLeft, setTimeLeft] = useState(25 * 60);
@@ -80,19 +81,34 @@ const Timer = () => {
         return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
     };
 
+    const calculateProgress = () => {
+        const totalSeconds = selectedDuration * 60;
+        return ((totalSeconds - timeLeft) / totalSeconds) * 100;
+    };
+
     return (
         <div className="max-w-2xl mx-auto space-y-8">
             <h1 className="text-3xl font-bold text-center">Pomodoro Timer</h1>
 
             <Card className="p-8">
                 <div className="text-center space-y-4">
-                    <div className="text-6xl font-bold">{formatTime(timeLeft)}</div>
-                    <div className="text-lg text-muted-foreground">
-                        {mode === "focus"
-                            ? "Focus Time"
-                            : mode === "shortBreak"
-                                ? "Short Break"
-                                : "Long Break"}
+                    <div className="relative flex items-center justify-center">
+                        <CircularProgress
+                            progress={calculateProgress()}
+                            size={240}
+                            strokeWidth={12}
+                            className="mx-auto"
+                        />
+                        <div className="absolute flex flex-col items-center">
+                            <div className="text-6xl font-bold">{formatTime(timeLeft)}</div>
+                            <div className="text-lg text-muted-foreground">
+                                {mode === "focus"
+                                    ? "Focus Time"
+                                    : mode === "shortBreak"
+                                        ? "Short Break"
+                                        : "Long Break"}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="flex justify-center space-x-2 mb-4">
