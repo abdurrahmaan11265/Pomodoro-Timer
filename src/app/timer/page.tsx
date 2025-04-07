@@ -10,6 +10,7 @@ const Timer = () => {
     const [isRunning, setIsRunning] = useState(false);
     const [mode, setMode] = useState<"focus" | "shortBreak" | "longBreak">("focus");
     const [cycles, setCycles] = useState(0);
+    const [selectedDuration, setSelectedDuration] = useState(25); // Default duration in minutes
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -41,7 +42,7 @@ const Timer = () => {
             }
         } else {
             setMode("focus");
-            setTimeLeft(25 * 60); // 25 minutes
+            setTimeLeft(selectedDuration * 60); // Use selected duration
         }
 
         // Update stats in localStorage
@@ -51,7 +52,7 @@ const Timer = () => {
             totalSessions: (stats.totalSessions || 0) + 1,
             todaySessions: (stats.todaySessions || 0) + 1,
             weeklySessions: (stats.weeklySessions || 0) + 1,
-            totalFocusTime: (stats.totalFocusTime || 0) + (mode === "focus" ? 25 : 0),
+            totalFocusTime: (stats.totalFocusTime || 0) + (mode === "focus" ? selectedDuration : 0),
             lastSessionDate: today,
         };
         localStorage.setItem("pomodoroStats", JSON.stringify(updatedStats));
@@ -63,7 +64,14 @@ const Timer = () => {
 
     const resetTimer = () => {
         setIsRunning(false);
-        setTimeLeft(25 * 60);
+        setTimeLeft(selectedDuration * 60);
+        setMode("focus");
+    };
+
+    const setTimerDuration = (minutes: number) => {
+        setSelectedDuration(minutes);
+        setTimeLeft(minutes * 60);
+        setIsRunning(false);
         setMode("focus");
     };
 
@@ -87,6 +95,35 @@ const Timer = () => {
                                 ? "Short Break"
                                 : "Long Break"}
                     </div>
+
+                    {/* Timer duration options */}
+                    <div className="flex justify-center space-x-2 mb-4">
+                        <Button
+                            variant={selectedDuration === 5 ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTimerDuration(5)}
+                            disabled={isRunning}
+                        >
+                            5 min
+                        </Button>
+                        <Button
+                            variant={selectedDuration === 15 ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTimerDuration(15)}
+                            disabled={isRunning}
+                        >
+                            15 min
+                        </Button>
+                        <Button
+                            variant={selectedDuration === 25 ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setTimerDuration(25)}
+                            disabled={isRunning}
+                        >
+                            25 min
+                        </Button>
+                    </div>
+
                     <div className="flex justify-center space-x-4">
                         <Button
                             size="lg"
@@ -129,6 +166,10 @@ const Timer = () => {
                     <div>
                         <p className="text-sm text-muted-foreground">Cycles Completed</p>
                         <p className="font-medium">{cycles}/4</p>
+                    </div>
+                    <div>
+                        <p className="text-sm text-muted-foreground">Selected Duration</p>
+                        <p className="font-medium">{selectedDuration} minutes</p>
                     </div>
                 </div>
             </Card>

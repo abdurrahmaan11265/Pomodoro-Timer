@@ -44,14 +44,16 @@ export default function Home() {
       <h1 className="text-3xl font-bold">Dashboard</h1>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="p-6">
+        <Card className="p-6 flex flex-col">
           <h2 className="text-xl font-semibold mb-4">Today's Tasks</h2>
-          <TaskList
-            tasks={tasks}
-            onToggle={toggleTask}
-            onDelete={deleteTask}
-            limit={5}
-          />
+          <div className="overflow-y-auto max-h-[300px] pr-2">
+            <TaskList
+              tasks={tasks}
+              onToggle={toggleTask}
+              onDelete={deleteTask}
+              limit={5}
+            />
+          </div>
         </Card>
 
         <Card className="p-6">
