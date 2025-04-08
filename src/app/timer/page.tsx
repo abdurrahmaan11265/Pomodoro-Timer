@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { CircularProgress } from "@/components/CircularProgress";
+import { cn } from "@/lib/utils";
 
 const Timer = () => {
     const [timeLeft, setTimeLeft] = useState(25 * 60);
@@ -12,6 +13,8 @@ const Timer = () => {
     const [mode, setMode] = useState<"focus" | "shortBreak" | "longBreak">("focus");
     const [cycles, setCycles] = useState(0);
     const [selectedDuration, setSelectedDuration] = useState(25);
+    const [isBlinking, setIsBlinking] = useState(false);
+    const [previousMode, setPreviousMode] = useState<"focus" | "shortBreak" | "longBreak">("focus");
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -27,10 +30,38 @@ const Timer = () => {
         return () => clearInterval(timer);
     }, [isRunning, timeLeft]);
 
-    const handleTimerComplete = () => {
-        const audio = new Audio("/notification.mp3");
-        audio.play();
+    // Effect to handle blinking when mode changes
+    useEffect(() => {
+        if (mode !== previousMode) {
+            // Play ding sound
+            const audio = new Audio("/music/ding.mp3");
 
+            // Start blinking effect
+            setIsBlinking(true);
+            setPreviousMode(mode);
+
+            // Play the sound and stop blinking when it ends
+            audio.play().then(() => {
+                // Get the duration of the audio
+                const soundDuration = audio.duration * 1000; // Convert to milliseconds
+
+                // Stop blinking after the sound finishes playing
+                const blinkTimer = setTimeout(() => {
+                    setIsBlinking(false);
+                }, soundDuration);
+
+                return () => clearTimeout(blinkTimer);
+            }).catch(error => {
+                console.error("Failed to play sound:", error);
+                // If sound fails to play, stop blinking after a short delay
+                setTimeout(() => {
+                    setIsBlinking(false);
+                }, 1000);
+            });
+        }
+    }, [mode, previousMode]);
+
+    const handleTimerComplete = () => {
         if (mode === "focus") {
             setCycles((prev) => prev + 1);
             if (cycles + 1 >= 4) {
@@ -90,7 +121,10 @@ const Timer = () => {
         <div className="max-w-2xl mx-auto space-y-8">
             <h1 className="text-3xl font-bold text-center">Pomodoro Timer</h1>
 
-            <Card className="p-8">
+            <Card className={cn(
+                "p-8 transition-all duration-300",
+                isBlinking && "animate-pulse bg-primary/30"
+            )}>
                 <div className="text-center space-y-4">
                     <div className="relative flex items-center justify-center">
                         <CircularProgress
@@ -164,7 +198,10 @@ const Timer = () => {
                 </div>
             </Card>
 
-            <Card className="p-6">
+            <Card className={cn(
+                "p-6 transition-all duration-300",
+                isBlinking && "animate-pulse bg-primary/20"
+            )}>
                 <h2 className="text-xl font-semibold mb-4">Session Info</h2>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
