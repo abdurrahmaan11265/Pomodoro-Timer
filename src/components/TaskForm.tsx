@@ -38,15 +38,13 @@ export const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => 
             dueDate: ""
         };
 
-        // Title validation
         if (title.trim().length < 3) {
             newErrors.title = "Title must be at least 3 characters long";
         }
 
-        // Due date validation
         const selectedDate = new Date(dueDate);
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time part for accurate date comparison
+        today.setHours(0, 0, 0, 0); 
 
         if (selectedDate < today) {
             newErrors.dueDate = "Due date must be in the future";
@@ -70,7 +68,6 @@ export const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => 
         }
     };
 
-    // Set minimum date for the date input (today)
     const today = new Date().toISOString().split('T')[0];
 
     return (
