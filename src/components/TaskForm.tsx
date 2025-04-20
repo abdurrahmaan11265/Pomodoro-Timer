@@ -27,17 +27,51 @@ export const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => 
     const [priority, setPriority] = useState<"low" | "medium" | "high">(
         initialData?.priority || "medium"
     );
+    const [errors, setErrors] = useState({
+        title: "",
+        dueDate: ""
+    });
+
+    const validateForm = () => {
+        const newErrors = {
+            title: "",
+            dueDate: ""
+        };
+
+        // Title validation
+        if (title.trim().length < 3) {
+            newErrors.title = "Title must be at least 3 characters long";
+        }
+
+        // Due date validation
+        const selectedDate = new Date(dueDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time part for accurate date comparison
+
+        if (selectedDate < today) {
+            newErrors.dueDate = "Due date must be in the future";
+        }
+
+        setErrors(newErrors);
+        return !newErrors.title && !newErrors.dueDate;
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit({
-            title,
-            description,
-            dueDate,
-            priority,
-            completed: false,
-        });
+
+        if (validateForm()) {
+            onSubmit({
+                title,
+                description,
+                dueDate,
+                priority,
+                completed: false,
+            });
+        }
     };
+
+    // Set minimum date for the date input (today)
+    const today = new Date().toISOString().split('T')[0];
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -49,10 +83,19 @@ export const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => 
                     type="text"
                     id="title"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md"
+                    onChange={(e) => {
+                        setTitle(e.target.value);
+                        if (errors.title) {
+                            setErrors(prev => ({ ...prev, title: "" }));
+                        }
+                    }}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.title ? 'border-red-500' : ''}`}
                     required
+                    minLength={3}
                 />
+                {errors.title && (
+                    <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                )}
             </div>
 
             <div>
@@ -76,10 +119,19 @@ export const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => 
                     type="date"
                     id="dueDate"
                     value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md"
+                    onChange={(e) => {
+                        setDueDate(e.target.value);
+                        if (errors.dueDate) {
+                            setErrors(prev => ({ ...prev, dueDate: "" }));
+                        }
+                    }}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.dueDate ? 'border-red-500' : ''}`}
                     required
+                    min={today}
                 />
+                {errors.dueDate && (
+                    <p className="text-red-500 text-sm mt-1">{errors.dueDate}</p>
+                )}
             </div>
 
             <div>
@@ -108,4 +160,4 @@ export const TaskForm = ({ onSubmit, onCancel, initialData }: TaskFormProps) => 
             </div>
         </form>
     );
-}; 
+};
